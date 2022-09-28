@@ -3,7 +3,11 @@ import svelte from "rollup-plugin-svelte";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import livereload from "rollup-plugin-livereload";
+import replace from "@rollup/plugin-replace";
 import { terser } from "rollup-plugin-terser";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const path = require("path");
 
@@ -23,6 +27,11 @@ export default {
     file: "public/bundle.js",
   },
   plugins: [
+    replace({
+      CURRENCY_EXCHANGE_API_KEY: JSON.stringify(
+        process.env.CURRENCY_EXCHANGE_API_KEY
+      ),
+    }),
     alias({
       resolve: [".svelte", ".js"], // add any aditional extensions needed
       entries: [
@@ -37,13 +46,7 @@ export default {
       ],
     }),
     svelte({
-      // enable run-time checks when not in production
-      dev: !production,
-      // we'll extract any component CSS out into
-      // a separate file — better for performance
-      css: (css) => {
-        css.write("bundle.css");
-      },
+      emitCss: false,
     }),
 
     // If you have external dependencies installed from
